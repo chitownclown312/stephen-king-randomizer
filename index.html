@@ -3,389 +3,296 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stephen King Movie Randomizer</title>
+<title>Stephen King Horror Randomizer</title>
 <style>
-  :root {
-    --bg1: #070707;
-    --bg2: #120a0b;
-    --wine: #421214;
-    --blood: #b32025;
-    --blood-bright: #d9363d;
-    --bone: #ece6dd;
-    --muted: #a89f98;
-    --panel: rgba(15, 14, 15, 0.82);
-    --line: rgba(255, 255, 255, 0.08);
-  }
+:root {
+  --bg1:#060606;
+  --bg2:#12090a;
+  --panel:rgba(16,15,16,.88);
+  --panel2:rgba(22,20,20,.88);
+  --line:rgba(255,255,255,.08);
+  --bone:#efe7dc;
+  --muted:#ac9f95;
+  --blood:#b71f25;
+  --blood2:#d93a41;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  margin:0;
+  min-height:100vh;
+  color:var(--bone);
+  font-family:Georgia, "Times New Roman", serif;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(150,30,35,.16), transparent 18%),
+    radial-gradient(circle at 85% 18%, rgba(255,255,255,.04), transparent 10%),
+    linear-gradient(180deg,#120d0d 0%,#0b0a0a 45%,#060606 100%);
+  overflow-x:hidden;
+}
+body::before {
+  content:"";
+  position:fixed; inset:0;
+  background:repeating-linear-gradient(to bottom, rgba(255,255,255,.012) 0 1px, transparent 2px 4px);
+  pointer-events:none; opacity:.35;
+}
+.sky { position:fixed; inset:0; pointer-events:none; overflow:hidden; }
+.moon {
+  position:absolute; right:7%; top:5%;
+  width:120px; height:120px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #f8f2e7 0%, #ddd3c5 38%, rgba(255,255,255,.15) 58%, rgba(255,255,255,0) 72%);
+  opacity:.18; box-shadow:0 0 80px rgba(255,255,255,.05);
+}
+.fog, .fog2 {
+  position:absolute; left:-8%; width:116%;
+  border-radius:50%; filter:blur(20px);
+  background:radial-gradient(ellipse at center, rgba(255,255,255,.08), rgba(255,255,255,.02) 45%, transparent 70%);
+  animation:drift 28s linear infinite;
+}
+.fog { height:180px; bottom:8%; }
+.fog2 { height:120px; bottom:28%; animation-direction:reverse; animation-duration:36s; opacity:.5; }
+@keyframes drift {
+  from { transform:translateX(-3%); }
+  50% { transform:translateX(3%) translateY(-8px); }
+  to { transform:translateX(-3%); }
+}
 
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    overflow-x: hidden;
-    color: var(--bone);
-    background:
-      radial-gradient(circle at 15% 15%, rgba(120, 18, 20, 0.18), transparent 20%),
-      radial-gradient(circle at 82% 22%, rgba(150, 24, 30, 0.14), transparent 18%),
-      linear-gradient(180deg, #140d0e 0%, #0a0909 45%, #060606 100%);
-    font-family: Georgia, "Times New Roman", serif;
-  }
-
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.015) 0px,
-        rgba(255,255,255,0.015) 1px,
-        transparent 2px,
-        transparent 4px
-      );
-    opacity: 0.3;
-    pointer-events: none;
-    mix-blend-mode: soft-light;
-  }
-
-  .sky {
-    position: fixed;
-    inset: 0;
-    overflow-x: hidden;
-    pointer-events: none;
-  }
-
-  .moon {
-    position: absolute;
-    right: 10%;
-    top: 8%;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 35% 30%, #f5f0e5 0%, #ddd5c8 35%, #b7b0a7 58%, rgba(183,176,167,0.3) 62%, rgba(183,176,167,0) 75%);
-    opacity: 0.16;
-    filter: blur(0.2px);
-    box-shadow: 0 0 60px rgba(255,255,255,0.06), 0 0 140px rgba(255,255,255,0.03);
-  }
-
-  .branches {
-    position: absolute;
-    inset: 0;
-    opacity: 0.09;
-    background:
-      linear-gradient(120deg, transparent 0 77%, rgba(0,0,0,0.8) 77.2% 77.7%, transparent 78%),
-      linear-gradient(128deg, transparent 0 80%, rgba(0,0,0,0.85) 80.2% 80.55%, transparent 80.9%),
-      linear-gradient(118deg, transparent 0 85%, rgba(0,0,0,0.75) 85.2% 85.45%, transparent 85.7%),
-      linear-gradient(245deg, transparent 0 15%, rgba(0,0,0,0.8) 15.1% 15.5%, transparent 15.9%),
-      linear-gradient(235deg, transparent 0 9%, rgba(0,0,0,0.8) 9.1% 9.35%, transparent 9.7%);
-    transform: scale(1.12);
-  }
-
-  .fog, .fog2, .fog3 {
-    position: absolute;
-    left: -10%;
-    width: 120%;
-    border-radius: 50%;
-    filter: blur(18px);
-    background: radial-gradient(ellipse at center, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 45%, rgba(255,255,255,0) 70%);
-    animation: drift 26s linear infinite;
-  }
-  .fog { height: 180px; bottom: 10%; }
-  .fog2 { height: 130px; bottom: 23%; animation-duration: 34s; animation-direction: reverse; opacity: .7; }
-  .fog3 { height: 100px; bottom: 38%; animation-duration: 42s; opacity: .35; }
-
-  @keyframes drift {
-    from { transform: translateX(-3%) translateY(0); }
-    50% { transform: translateX(3%) translateY(-8px); }
-    to { transform: translateX(-3%) translateY(0); }
-  }
-
-  .wrap {
-    position: relative;
-    width: min(860px, calc(100vw - 32px));
-    z-index: 2;
-  }
-
-  .card {
-    position: relative;
-    padding: 40px 32px 34px;
-    border-radius: 24px;
-    background:
-      linear-gradient(180deg, rgba(22, 19, 20, 0.92), rgba(10, 10, 10, 0.92));
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow:
-      0 24px 80px rgba(0,0,0,0.55),
-      0 0 0 1px rgba(179,32,37,0.07) inset,
-      0 0 30px rgba(179,32,37,0.08);
-    backdrop-filter: blur(6px);
-    overflow-x: hidden;
-  }
-
-  .card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at top right, rgba(185, 32, 37, 0.12), transparent 25%),
-      radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.04), transparent 22%);
-    pointer-events: none;
-  }
-
-  .topline {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 2.2px;
-    font-size: 12px;
-    margin-bottom: 12px;
-  }
-
-  .rule {
-    width: 48px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
-  }
-
-  h1 {
-    margin: 0;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    line-height: 0.94;
-    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-    font-size: clamp(44px, 7vw, 86px);
-    color: var(--bone);
-    text-shadow: 0 2px 0 rgba(0,0,0,0.35);
-  }
-
-  h1 .accent {
-    display: block;
-    color: var(--blood-bright);
-    text-shadow: 0 4px 0 rgba(70, 10, 12, 0.72), 0 0 26px rgba(217,54,61,0.12);
-  }
-
-  .sub {
-    margin-top: 16px;
-    text-align: center;
-    color: #b8ada5;
-    font-size: 15px;
-    letter-spacing: 1.5px;
-  }
-
-  .display {
-    margin: 36px auto 26px;
-    padding: 28px 20px 24px;
-    max-width: 700px;
-    border-radius: 18px;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: inset 0 0 28px rgba(255,255,255,0.02);
-    text-align: center;
-  }
-
-  .eyebrow {
-    color: var(--blood-bright);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-size: 12px;
-    margin-bottom: 18px;
-  }
-
-  #movieTitle {
-    font-size: clamp(38px, 6.5vw, 74px);
-    line-height: 1.04;
-    margin: 0 0 10px;
-    text-wrap: balance;
-    min-height: 1.1em;
-    transition: opacity .22s ease, transform .22s ease;
-  }
-
-  #movieYear {
-    font-size: clamp(22px, 3vw, 30px);
-    color: var(--muted);
-    transition: opacity .22s ease, transform .22s ease;
-  }
-
-  .fade-out {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  .actions {
-    display: flex;
-    justify-content: center;
-    margin-top: 28px;
-  }
-
-  button {
-    position: relative;
-    appearance: none;
-    border: 1px solid rgba(245, 104, 104, 0.7);
-    border-radius: 999px;
-    padding: 16px 28px;
-    min-width: 250px;
-    cursor: pointer;
-    color: white;
-    font: 700 16px Georgia, serif;
-    letter-spacing: 1.2px;
-    background:
-      linear-gradient(180deg, #b82026 0%, #8b1318 60%, #6f0c11 100%);
-    box-shadow:
-      0 12px 24px rgba(0,0,0,.28),
-      0 0 24px rgba(185,32,37,.16),
-      inset 0 1px 0 rgba(255,255,255,.18);
-    transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
-  }
-
-  button:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.06);
-    box-shadow:
-      0 14px 28px rgba(0,0,0,.3),
-      0 0 26px rgba(185,32,37,.22),
-      inset 0 1px 0 rgba(255,255,255,.2);
-  }
-
-  button:active {
-    transform: translateY(1px) scale(.99);
-  }
-
-  .meta {
-    margin-top: 26px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-  }
-
-  .chip {
-    padding: 10px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.03);
-    color: #c0b7af;
-    font-size: 13px;
-    letter-spacing: .4px;
-  }
-
-  .footer {
-    margin-top: 28px;
-    text-align: center;
-    color: #8d837d;
-    font-size: 13px;
-    letter-spacing: 1.2px;
-  }
-
-  .footer span {
-    color: #bc383d;
-  }
-
-  @media (max-width: 640px) {
-    .card { padding: 30px 18px 24px; border-radius: 20px; }
-    .display { margin-top: 28px; padding: 22px 14px 20px; }
-    .moon { width: 100px; height: 100px; right: 4%; top: 5%; }
-    .chip { font-size: 12px; }
-    button { min-width: 210px; width: 100%; }
-    .actions { padding: 0 6px; }
-  }
-
-.food-section{margin-top:22px;padding:28px 24px 24px;border-radius:20px;background:linear-gradient(180deg,rgba(20,18,18,.9),rgba(9,9,9,.92));border:1px solid rgba(255,255,255,.07);box-shadow:0 18px 55px rgba(0,0,0,.35),0 0 25px rgba(179,32,37,.05)}
-.food-title{margin:0 0 6px;text-align:center;color:var(--bone);font-size:28px}
-.food-sub{text-align:center;color:var(--muted);font-size:13px;letter-spacing:.8px;margin-bottom:20px}
-.food-grid{display:grid;gap:10px}
-.food-row{display:grid;grid-template-columns:145px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.025)}
-.food-label{color:#c7bbb2;font-size:12px;text-transform:uppercase;letter-spacing:1.5px}
-.food-value{min-width:0;color:var(--bone);font-size:18px;line-height:1.25}
-.mini-roll{min-width:0;width:auto;padding:9px 13px;border-radius:999px;font-size:12px;letter-spacing:.6px;box-shadow:none}
-.food-main-actions{display:flex;justify-content:center;margin-top:16px}
-.food-main-actions button{min-width:230px}
-@media (max-width:640px){.food-section{padding:22px 14px 18px}.food-row{grid-template-columns:1fr auto;gap:8px}.food-label{grid-column:1/-1;margin-bottom:-2px}.food-value{font-size:16px}.mini-roll{width:auto;min-width:92px}}
-
+.wrap {
+  width:min(920px, calc(100vw - 24px));
+  margin:26px auto 36px;
+  position:relative; z-index:2;
+}
+.panel {
+  position:relative;
+  background:linear-gradient(180deg, rgba(22,20,20,.92), rgba(10,10,10,.92));
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:34px 26px 26px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45), 0 0 25px rgba(183,31,37,.08);
+  overflow:hidden;
+}
+.panel::before {
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(circle at top right, rgba(217,58,65,.11), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(255,255,255,.035), transparent 20%);
+  pointer-events:none;
+}
+.topline {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  color:var(--muted); text-transform:uppercase; letter-spacing:2px; font-size:12px;
+}
+.rule {
+  width:50px; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.24), transparent);
+}
+h1 {
+  margin:10px 0 0; text-align:center; line-height:.92;
+  font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size:clamp(42px, 7vw, 82px);
+  text-transform:uppercase; letter-spacing:1px;
+}
+h1 .accent {
+  display:block; color:var(--blood2);
+  text-shadow:0 4px 0 rgba(65,8,11,.72), 0 0 26px rgba(217,58,65,.12);
+}
+.sub {
+  text-align:center; margin-top:14px; color:#b9aea3;
+  font-size:15px; letter-spacing:1.2px;
+}
+.display {
+  position:relative;
+  margin:30px auto 26px; padding:30px 18px 24px;
+  max-width:720px; border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.026), rgba(255,255,255,.012));
+  border:1px solid rgba(255,255,255,.07);
+  text-align:center;
+}
+.eyebrow {
+  color:var(--blood2); text-transform:uppercase; letter-spacing:2px; font-size:12px; margin-bottom:16px;
+}
+#movieTitle {
+  font-size:clamp(38px, 6vw, 72px);
+  line-height:1.04; margin:0 0 10px;
+  min-height:1.1em; text-wrap:balance;
+  transition:opacity .2s ease, transform .2s ease;
+}
+#movieYear {
+  color:var(--muted); font-size:clamp(22px, 3vw, 30px);
+  transition:opacity .2s ease, transform .2s ease;
+}
+.fade-out { opacity:0; transform:translateY(7px); }
+.actions {
+  display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap;
+}
+button {
+  appearance:none; border:1px solid rgba(245,104,104,.72); border-radius:999px;
+  background:linear-gradient(180deg, #ba1e25 0%, #891117 60%, #690c10 100%);
+  color:#fff; cursor:pointer;
+  font:700 16px Georgia, serif; letter-spacing:1px;
+  padding:15px 28px; min-width:250px;
+  box-shadow:0 12px 24px rgba(0,0,0,.28), 0 0 24px rgba(185,32,37,.16), inset 0 1px 0 rgba(255,255,255,.18);
+  transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
+}
+button:hover { transform:translateY(-1px); filter:brightness(1.06); }
+button:active { transform:translateY(1px) scale(.99); }
+.meta {
+  margin-top:24px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+}
+.chip {
+  padding:10px 14px; border-radius:999px; background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08); color:#c1b8b0; font-size:13px;
+}
+.footer {
+  margin-top:24px; text-align:center; color:#8f847a; font-size:13px; letter-spacing:1px;
+}
+.section {
+  margin-top:20px;
+}
+.food-title {
+  margin:0 0 6px; text-align:center; color:var(--bone); font-size:28px;
+}
+.food-sub {
+  text-align:center; color:var(--muted); font-size:13px; letter-spacing:.8px; margin-bottom:18px;
+}
+.food-grid {
+  display:grid; gap:10px;
+}
+.food-row {
+  display:grid; grid-template-columns:155px 1fr auto; gap:12px; align-items:center;
+  padding:12px 14px; border-radius:14px;
+  border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.025);
+}
+.food-label {
+  color:#c7bbb2; font-size:12px; text-transform:uppercase; letter-spacing:1.5px;
+}
+.food-value {
+  font-size:18px; line-height:1.25; min-width:0;
+}
+.mini-roll {
+  min-width:0; width:auto; padding:9px 13px; font-size:12px; letter-spacing:.6px; box-shadow:none;
+}
+.food-main-actions {
+  display:flex; justify-content:center; margin-top:16px;
+}
+.food-row.special-row {
+  border-color:rgba(217,58,65,.28);
+  background:rgba(183,31,37,.07);
+}
+.food-row[hidden] { display:none !important; }
+.skull-burst {
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%, -50%) scale(.5);
+  opacity:0; pointer-events:none;
+  text-align:center;
+}
+.skull-burst.active { animation:skullPop 1.2s ease-out forwards; }
+.skull-icon {
+  font-size:66px; line-height:1; filter:drop-shadow(0 0 14px rgba(217,58,65,.2));
+}
+.skull-laugh {
+  margin-top:8px; color:var(--blood2); letter-spacing:4px; font-size:12px;
+}
+@keyframes skullPop {
+  0% { opacity:0; transform:translate(-50%, -10%) scale(.25) rotate(-18deg); }
+  18% { opacity:1; transform:translate(-50%, -55%) scale(1.05) rotate(7deg); }
+  58% { opacity:1; transform:translate(-50%, -72%) scale(1) rotate(-6deg); }
+  100% { opacity:0; transform:translate(-50%, -115%) scale(1.25) rotate(6deg); }
+}
+@media (max-width:640px) {
+  .wrap { width:min(100vw - 14px, 920px); margin:14px auto 22px; }
+  .panel { padding:28px 14px 18px; border-radius:20px; }
+  .display { margin-top:26px; padding:22px 12px 18px; }
+  button { min-width:210px; width:100%; }
+  .food-row { grid-template-columns:1fr auto; gap:8px; }
+  .food-label { grid-column:1 / -1; }
+  .food-value { font-size:16px; }
+  .mini-roll { min-width:94px; width:auto; }
+  .catalog-header { align-items:flex-start; }
+}
 </style>
 </head>
 <body>
-  <div class="sky" aria-hidden="true">
-    <div class="moon"></div>
-    <div class="branches"></div>
-    <div class="fog"></div>
-    <div class="fog2"></div>
-    <div class="fog3"></div>
-  </div>
+<div class="sky" aria-hidden="true">
+  <div class="moon"></div>
+  <div class="fog"></div>
+  <div class="fog2"></div>
+</div>
 
-  <main class="wrap">
-    <section class="card">
-      <div class="topline">
-        <div class="rule"></div>
-        <div>Preliminary Randomizer</div>
-        <div class="rule"></div>
+<main class="wrap">
+  <section class="panel">
+    <div class="topline"><div class="rule"></div><div>Stephen King Mode</div><div class="rule"></div></div>
+    <h1><span class="accent">Stephen King</span>Horror Randomizer</h1>
+    <div class="sub">37 Stephen King horror and dark-thriller picks, one roll at a time.</div>
+
+    <div class="display">
+      <div class="eyebrow">Tonight's Movie</div>
+      <div id="movieTitle">Press the button</div>
+      <div id="movieYear">—</div>
+      <div id="skullBurst" class="skull-burst" aria-hidden="true">
+        <div class="skull-icon">☠</div>
+        <div class="skull-laugh">HA · HA · HA</div>
       </div>
+    </div>
 
-      <h1>
-        <span class="accent">Stephen King</span>
-        Movie Randomizer
-      </h1>
+    <div class="actions">
+      <button id="randomizeButton" type="button">🎲 RANDOMIZE MOVIE</button>
+    </div>
 
-      <div class="sub">A simple draw from the full Stephen King movie pool</div>
+    <div class="meta">
+      <div class="chip">37 movies in the pool</div>
+      <div class="chip">No immediate repeats</div>
+      <div class="chip">Laughing skull effect enabled</div>
+    </div>
 
-      <div class="display">
-        <div class="eyebrow">Tonight's Movie</div>
-        <div id="movieTitle">Press the button</div>
-        <div id="movieYear">—</div>
-      </div>
+    <div class="footer">Long days and pleasant nights.</div>
+  </section>
 
-      <div class="actions">
-        <button id="randomizeButton" type="button">🎲 RANDOMIZE MOVIE</button>
-      </div>
-
-      <div class="meta">
-        <div class="chip">55 movies in the pool</div>
-        <div class="chip">No immediate repeats</div>
-        <div class="chip">Version 1</div>
-      </div>
-
-      <div class="footer">Long days and pleasant nights<span>.</span></div>
-    </section>
-
-<section class="food-section">
-  <div class="topline"><div class="rule"></div><div>Movie Night Fuel</div><div class="rule"></div></div>
-  <h2 class="food-title">Fast Food Picker</h2>
-  <div class="food-sub">Pick the place, then let fate build the order.</div>
-  <div class="food-grid">
-    <div class="food-row"><div class="food-label">Fast Food Place</div><div class="food-value" id="foodPlace">Press Roll Food</div><button class="mini-roll" id="rerollPlace" type="button">↻ REROLL</button></div>
-    <div class="food-row"><div class="food-label">Meal</div><div class="food-value" id="foodMeal">—</div><button class="mini-roll" id="rerollMeal" type="button">↻ REROLL</button></div>
-    <div class="food-row"><div class="food-label">Drink</div><div class="food-value" id="foodDrink">—</div><button class="mini-roll" id="rerollDrink" type="button">↻ REROLL</button></div>
-    <div class="food-row"><div class="food-label">Dessert</div><div class="food-value" id="foodDessert">—</div><button class="mini-roll" id="rerollDessert" type="button">↻ REROLL</button></div>
-    <div class="food-row"><div class="food-label">Extra Random Item</div><div class="food-value" id="foodExtra">—</div><button class="mini-roll" id="rerollExtra" type="button">↻ REROLL</button></div>
-  </div>
-  <div class="food-main-actions"><button id="rollFood" type="button">🍔 ROLL FOOD</button></div>
-</section>
-
-  </main>
+  <section class="panel section">
+    <div class="topline"><div class="rule"></div><div>Movie Night Fuel</div><div class="rule"></div></div>
+    <h2 class="food-title">Food Picker</h2>
+    <div class="food-sub">Roll the whole order, or reroll each part separately.</div>
+    <div class="food-grid">
+      <div class="food-row"><div class="food-label">Fast Food Place</div><div class="food-value" id="foodPlace">Press Roll Food</div><button class="mini-roll" id="rerollPlace" type="button">↻ REROLL</button></div>
+      <div class="food-row"><div class="food-label">Meal</div><div class="food-value" id="foodMeal">—</div><button class="mini-roll" id="rerollMeal" type="button">↻ REROLL</button></div>
+      <div class="food-row"><div class="food-label">Drink</div><div class="food-value" id="foodDrink">—</div><button class="mini-roll" id="rerollDrink" type="button">↻ REROLL</button></div>
+      <div class="food-row"><div class="food-label">Dessert</div><div class="food-value" id="foodDessert">—</div><button class="mini-roll" id="rerollDessert" type="button">↻ REROLL</button></div>
+      <div class="food-row"><div class="food-label">Extra Random Item</div><div class="food-value" id="foodExtra">—</div><button class="mini-roll" id="rerollExtra" type="button">↻ REROLL</button></div>
+      <div class="food-row special-row" id="foodSpecialRow" hidden><div class="food-label" id="foodSpecialLabel">Special Pick</div><div class="food-value" id="foodSpecial">—</div><button class="mini-roll" id="rerollSpecial" type="button">↻ REROLL</button></div>
+    </div>
+    <div class="food-main-actions">
+      <button id="rollFood" type="button">🍔 ROLL FOOD</button>
+    </div>
+  </section>
+</main>
 
 <script>
-const movies = [{"title": "Carrie", "year": 1976}, {"title": "The Shining", "year": 1980}, {"title": "Creepshow", "year": 1982}, {"title": "Cujo", "year": 1983}, {"title": "The Dead Zone", "year": 1983}, {"title": "Christine", "year": 1983}, {"title": "Children of the Corn", "year": 1984}, {"title": "Firestarter", "year": 1984}, {"title": "Cat's Eye", "year": 1985}, {"title": "Silver Bullet", "year": 1985}, {"title": "Maximum Overdrive", "year": 1986}, {"title": "Stand by Me", "year": 1986}, {"title": "Creepshow 2", "year": 1987}, {"title": "The Running Man", "year": 1987}, {"title": "Pet Sematary", "year": 1989}, {"title": "Graveyard Shift", "year": 1990}, {"title": "Misery", "year": 1990}, {"title": "Tales from the Darkside: The Movie", "year": 1990}, {"title": "Sleepwalkers", "year": 1992}, {"title": "The Dark Half", "year": 1993}, {"title": "Needful Things", "year": 1993}, {"title": "The Shawshank Redemption", "year": 1994}, {"title": "The Mangler", "year": 1995}, {"title": "Dolores Claiborne", "year": 1995}, {"title": "Thinner", "year": 1996}, {"title": "The Night Flier", "year": 1997}, {"title": "Apt Pupil", "year": 1998}, {"title": "The Green Mile", "year": 1999}, {"title": "Hearts in Atlantis", "year": 2001}, {"title": "Dreamcatcher", "year": 2003}, {"title": "Secret Window", "year": 2004}, {"title": "Riding the Bullet", "year": 2004}, {"title": "1408", "year": 2007}, {"title": "The Mist", "year": 2007}, {"title": "Dolan's Cadillac", "year": 2009}, {"title": "Carrie", "year": 2013}, {"title": "A Good Marriage", "year": 2014}, {"title": "Mercy", "year": 2014}, {"title": "Cell", "year": 2016}, {"title": "The Dark Tower", "year": 2017}, {"title": "It", "year": 2017}, {"title": "Gerald's Game", "year": 2017}, {"title": "1922", "year": 2017}, {"title": "Pet Sematary", "year": 2019}, {"title": "It Chapter Two", "year": 2019}, {"title": "In the Tall Grass", "year": 2019}, {"title": "Doctor Sleep", "year": 2019}, {"title": "Firestarter", "year": 2022}, {"title": "Mr. Harrigan's Phone", "year": 2022}, {"title": "The Boogeyman", "year": 2023}, {"title": "'Salem's Lot", "year": 2024}, {"title": "The Life of Chuck", "year": 2024}, {"title": "The Monkey", "year": 2025}, {"title": "The Long Walk", "year": 2025}, {"title": "The Running Man", "year": 2025}];
+const movies = [{"title":"Carrie","year":1976},{"title":"The Shining","year":1980},{"title":"Creepshow","year":1982},{"title":"Cujo","year":1983},{"title":"Christine","year":1983},{"title":"The Dead Zone","year":1983},{"title":"Children of the Corn","year":1984},{"title":"Cat's Eye","year":1985},{"title":"Maximum Overdrive","year":1986},{"title":"Creepshow 2","year":1987},{"title":"Pet Sematary","year":1989},{"title":"Graveyard Shift","year":1990},{"title":"It","year":1990},{"title":"Misery","year":1990},{"title":"Tales from the Darkside: The Movie","year":1990},{"title":"Sleepwalkers","year":1992},{"title":"The Dark Half","year":1993},{"title":"Needful Things","year":1993},{"title":"Dolores Claiborne","year":1995},{"title":"The Mangler","year":1995},{"title":"Thinner","year":1996},{"title":"The Night Flier","year":1997},{"title":"Dreamcatcher","year":2003},{"title":"Riding the Bullet","year":2004},{"title":"1408","year":2007},{"title":"The Mist","year":2007},{"title":"Carrie","year":2013},{"title":"Mercy","year":2014},{"title":"Cell","year":2016},{"title":"It","year":2017},{"title":"Gerald's Game","year":2017},{"title":"Pet Sematary","year":2019},{"title":"It Chapter Two","year":2019},{"title":"Doctor Sleep","year":2019},{"title":"The Boogeyman","year":2023},{"title":"'Salem's Lot","year":2024},{"title":"The Monkey","year":2025}];
+const restaurants = [{"name":"McDonald's","meals":["Deluxe McCrispy Meal","Spicy Deluxe McCrispy Meal","McCrispy Strips Meal","Ranch Snack Wrap Meal","Spicy Snack Wrap Meal","Ranch & Spicy Snack Wrap Meal","McCrispy Meal","Spicy McCrispy Meal","10 Piece Chicken McNuggets Meal","Big Mac Meal","Quarter Pounder with Cheese Meal","Bacon Quarter Pounder with Cheese Meal"],"drinks":["Coca-Cola","Sprite","Dr Pepper","Sweet Tea","Diet Coke","Hi-C Orange Lavaburst","Strawberry Watermelon Refresher","Dirty Dr Pepper","Vanilla Swirl with Coca-Cola","Reduced Sugar Vanilla Swirl with Diet Coke","Mango Pineapple Refresher","Blackberry Passion Fruit Refresher","Orange Dream with Hi-C","Orange Dream with Fanta"],"desserts":["OREO McFlurry","M&M'S McFlurry","Vanilla Cone","Chocolate Shake","Vanilla Shake","Strawberry Shake","Hot Fudge Sundae","Hot Caramel Sundae","Baked Apple Pie"],"extras":["6 pc Chicken McNuggets","Small Fries","Hash Browns","Extra Cheeseburger"]},{"name":"Wendy's","meals":["Dave's Combo","Baconator Combo","Son of Baconator Combo","10 PC Chicken Nugget Combo","Classic Chicken Sandwich Combo","Spicy Chicken Sandwich Combo","Grilled Chicken Wrap Combo","Big Bacon Classic Combo","Asiago Ranch Club Sandwich Combo","3 PC Tenders Combo","4 PC Tenders Combo","Pretzel Bacon Pub Cheeseburger Combo","Pretzel Bacon Pub Double Cheeseburger Combo","Pretzel Bacon Pub Triple Cheeseburger Combo","Pretzel Bacon Pub Chicken Sandwich Combo"],"drinks":["Watermelon Lemonade","Pineapple Mango Lemonade","All-Natural Lemonade","Strawberry Lemonade","Sprite Watermelon","Watermelon Sparkling Energy","Pineapple Citrus Sparkling Energy","Coca-Cola","Coca-Cola Zero Sugar","Diet Coke","Sprite","Dr Pepper","Diet Dr Pepper","Barq's Root Beer","Fanta Orange","Minute Maid Light Lemonade"],"desserts":["Cinnabon Pull-Apart","Chocolate Chunk Cookie","Classic Chocolate Frosty","Vanilla Frosty","Apple Crumble Frosty Fusion — Vanilla","Cookie Dough Frosty Fusion — Vanilla","Cookie Dough Frosty Fusion — Chocolate","OREO Brownie Vanilla Frosty Fusion","Caramel Crunch Vanilla Frosty Fusion","Brownie Batter Vanilla Frosty Swirl","Strawberry Vanilla Frosty Swirl","Caramel Vanilla Frosty Swirl","OREO Brownie Chocolate Frosty Fusion","Caramel Crunch Chocolate Frosty Fusion","Brownie Batter Chocolate Frosty Swirl","Strawberry Chocolate Frosty Swirl","Caramel Chocolate Frosty Swirl"],"extras":["Jr. Bacon Cheeseburger","Jr. Cheeseburger Deluxe","Jr. Cheeseburger","Double Stack","Jr. Hamburger","Pretzel Bacon Pub Chicken Sandwich","Nuggs Party Pack","10 PC Spicy Chicken Nuggets","6 PC Spicy Chicken Nuggets","4 PC Spicy Chicken Nuggets","Classic Chicken Sandwich","Spicy Chicken Sandwich","Grilled Chicken Wrap","Asiago Ranch Club Sandwich — Classic","Asiago Ranch Club Sandwich — Spicy","Crispy Chicken BLT","Crispy Chicken Sandwich","10 PC Chicken Nuggets","6 PC Chicken Nuggets","4 PC Chicken Nuggets","3 PC Tenders","4 PC Tenders","French Fries","Pub Fries","Baconator Fries","Chili Cheese Fries","Cheese Fries","Chili","Sour Cream & Chive Baked Potato","Plain Baked Potato","Bacon Cheese Baked Potato","Chili & Cheese Baked Potato","Cheese Baked Potato","Apple Bites"]},{"name":"Taco Bell","meals":["Crunchwrap Supreme Combo","3 Doritos Locos Tacos Combo","Chicken Quesadilla Combo","Cheesy Gordita Crunch Combo"],"drinks":["Baja Blast","Pepsi","Starry","Brisk Tea"],"desserts":["Cinnabon Delights","Cinnamon Twists","Caramel Apple Empanada","No Dessert"],"extras":["Cheesy Fiesta Potatoes","Bean Burrito","Spicy Potato Soft Taco","Nachos & Cheese"]},{"name":"Burger King","meals":["Whopper Meal","Texas Whopper Meal","Impossible Whopper Meal","Impossible Texas Whopper Meal","Double Whopper Meal","Texas Double Whopper Meal","Triple Whopper Meal","Bacon King Meal","Whopper Jr Meal","Texas Whopper Jr Meal","Bacon Double Cheeseburger Meal","Double Cheeseburger Meal","Rodeo Double Cheeseburger Meal","Two Cheeseburger Meal","Royal Crispy Chicken Meal","Spicy Royal Crispy Chicken Meal","Bacon & Swiss Royal Crispy Chicken Meal","Two Royal Crispy Wraps Meal","Original Chicken Sandwich Meal","Chicken Nuggets Meal","Chicken Fries Meal","Mozzarella Fries Meal"],"drinks":["Coca-Cola","Diet Coke","Coca-Cola Zero Sugar","Dr Pepper","Sprite","Sprite Zero","Pure Life Purified Water","Signature Mango Peach Lemonade","Signature Strawberry Lemonade","Minute Maid Lemonade","Sweetened Iced Tea","Unsweetened Iced Tea","Barq's Root Beer","Diet Barq's","Hi-C Fruit Punch","Hi-C Pink Lemonade","Fanta Orange","Fanta Strawberry","Mello Yello","Mello Yello Zero","Powerade","Powerade Zero","Honest Kids Apple Juice Drink","Shakes","Hi-C Orange Freezee King","Coke Freezee King","Fanta Strawberry Freezee King","Fanta Blue Raspberry Freezee King","Brewed Coffee","Decaf Coffee","Iced Coffee","Fat Free Milk","Chocolate Milk"],"desserts":["Cinnamon Apple Pie","OREO Sundae","HERSHEY'S Sundae","HERSHEY'S Sundae Pie","Classic OREO Shake","Chocolate OREO Shake","Chocolate Shake","Vanilla Shake","Soft Serve Cup","Soft Serve Cone","Chocolate Chip Cookies"],"extras":["French Fries","Onion Rings","Have-sies","Mozzarella Fries","Chicken Fries","Chicken Nuggets","Cheesy Bacon Tots","Jalapeño Cheddar Bites","Crispy Tacos","Club Original Chicken Sandwich","Original Chicken Sandwich","Royal Crispy Chicken","Spicy Royal Crispy Chicken","Bacon & Swiss Royal Crispy Chicken","Chicken Jr.","Royal Crispy Wrap","Spicy Royal Crispy Wrap","Honey Mustard Royal Crispy Wrap","Impossible Texas Whopper","Double Whopper","Texas Double Whopper","Triple Whopper","Bacon King","BBQ Bacon Whopper Jr.","Double Whopper Jr.","Whopper Jr.","Texas Whopper Jr.","Bacon Double Cheeseburger","Bacon Cheeseburger","Double Cheeseburger","Cheeseburger","Rodeo Double Cheeseburger","Rodeo Cheeseburger","Rodeo Burger"]},{"name":"Culver's","meals":["ButterBurger Cheese Basket","Mushroom & Swiss ButterBurger Basket","Chicken Tenders Basket","Crispy Chicken Sandwich Basket"],"drinks":["Root Beer","Coca-Cola","Dr Pepper","Sweet Tea"],"desserts":["Vanilla Concrete Mixer","Chocolate Concrete Mixer","Turtle Sundae","Dish of Frozen Custard"],"extras":["Wisconsin Cheese Curds","Crinkle Cut Fries","Onion Rings","Pretzel Bites"]},{"name":"Popeyes","meals":["Signature Chicken Big Box","Tenders Big Box","Big Box Signature Chicken Bundle","Big Box Tenders Bundle","8Pc Signature Chicken Family Meal","8Pc Tenders","Signature Chicken & Tenders Bundle"],"drinks":["Pineapple Cane Sweeeet Lemonade","Pineapple Cane Sweeeet Tea","Cane Sweeeet Tea","Unsweeeet Tea","Cane Sweeeet Lemonade","Mango Cane Sweeeet Lemonade","Strawberry Cane Sweeeet Lemonade","Small Fountain Drink","Regular Fountain Drink","Large Fountain Drink","18.5oz Bottle Gold Peak Sweet Tea","20oz Bottle Diet Coke","20oz Bottle Sprite"],"desserts":["Cinnamon Apple Pie","Strawberry Cream Cheese Pie","Caramel Apple Cheesecake Cup","Strawberry Cupcake Cup","Strawberry Cheesecake Cup","Blueberry Lemon Cheesecake Cup"],"extras":["Cajun Rice","Homestyle Mac & Cheese","Cajun Fries","Mashed Potatoes with Cajun Gravy","Cajun Gravy Side","Red Beans & Rice","3Pc Tenders","Classic Chicken Sandwich","Spicy Chicken Sandwich","Honey BBQ Chicken Sandwich","Bacon & Cheese Chicken Sandwich","Chicken Wrap","6Pc Wings","12Pc Wings","24Pc Wings","8Pc Butterfly Shrimp","4Pc Butterfly Shrimp & 2Pc Tenders"]},{"name":"KFC","meals":["3 pc Chicken Combo","Chicken Sandwich Combo","5 pc Tenders Combo","Famous Bowl Combo"],"drinks":["Pepsi","Starry","Mountain Dew","Sweet Tea"],"desserts":["Chocolate Chip Cookie","Apple Turnover","Cake Slice","No Dessert"],"extras":["Mac & Cheese","Mashed Potatoes & Gravy","Biscuit","Extra Tender"]},{"name":"White Castle","meals":["Cheese Slider Combo","Double Cheese Slider Combo","Chicken Ring Combo","Crispy Chicken Slider Combo"],"drinks":["Coca-Cola","Sprite","Fruit Punch","Chocolate Shake"],"desserts":["Brownie on a Stick","Cheesecake on a Stick","Strawberry Swirl Cheesecake","No Dessert"],"extras":["Chicken Rings","Onion Chips","Mozzarella Cheese Sticks","Extra Slider"]},{"name":"Portillo's","meals":["Portillo's Beef Hot Dog","Jumbo Beef Hot Dog","Plant-Based Garden Dog","Chili Cheese Dog","Jumbo Chili Cheese Dog","Maxwell Street Polish","Italian Beef Sandwich","Big Beef Sandwich","Italian Sausage Sandwich","Italian Beef & Sausage Sandwich","Beef-N-Cheddar Croissant","Broiled Chicken Sandwich","Breaded Chicken Sandwich","Spicy Chicken Sandwich","4-Piece Chicken Tenders","6-Piece Chicken Tenders","20-Piece Chicken Tenders","Breaded Whitefish Sandwich","Single Hamburger","Double Hamburger","Single Cheeseburger","Double Cheeseburger","Single Bacon Burger","Double Bacon Burger","Single Bacon Cheeseburger","Double Bacon Cheeseburger","Single Rodeo Burger","Double Rodeo Burger"],"drinks":["Fountain Drink"],"desserts":["Chocolate Shake","Vanilla Shake","Strawberry Shake","Chocolate Malt","Vanilla Malt","Strawberry Malt","Chocolate Cake Shake","Dr Pepper Shake","Dr Pepper Cake Shake"],"extras":["French Fries","Onion Rings","Cheese Sauce","Giardiniera Sauce","Tamale","Garden Salad","Chicken Noodle Soup","Cup of Chili","Chili Cheese Fries","Gravy Bread"]},{"name":"Sonic","meals":["SuperSONIC Double Cheeseburger Combo","Footlong Quarter Pound Coney Combo","Crispy Chicken Sandwich Combo","Chicken Tenders Combo"],"drinks":["Cherry Limeade","Ocean Water","Dr Pepper","Strawberry Lemonade"],"desserts":["OREO Blast","Chocolate Shake","Hot Fudge Sundae","Reese's Blast"],"extras":["Mozzarella Sticks","Tots","Chili Cheese Tots","Corn Dog"]},{"name":"Noodles & Company","meals":["Baked Cheese Tortelloni","Roasted Garlic Cream Tortelloni","Baked Chicken Parmesan","Pasta Fresca","Basil Pesto Cavatappi","Lemon Garlic Shrimp Scampi","Buttery Parmesan Noodles","Pad Thai","Japanese Pan Noodles","Rigatoni Rosa with Parmesan Chicken","Spaghetti & Meatballs","Crispy Chicken Bacon Alfredo","Cajun Shrimp Fettuccine","Spicy Korean Steak Noodles","Creamy Cheddar Mac & Cheese","Buffalo Chicken Ranch Mac & Cheese","Pulled Pork BBQ Mac & Cheese","Basil Pesto Cavatappi with Chicken","Roasted Garlic Cream Tortelloni with Chicken","Buttery Parmesan Noodles with Chicken","Japanese Pan Noodle with Chicken","Pasta Fresca with Chicken","Mediterranean Chicken Salad","Chicken Noodle Soup"],"drinks":["Coca-Cola","Sprite","Lemonade","Iced Tea"],"desserts":["Rice Crispy Treat","Chocolate Chunk Cookie","Snickerdoodle Cookie","No Dessert"],"extras":["Potstickers","3 Piece Potstickers","Cheesy Garlic Bread","Korean BBQ Meatballs","Parmesan-Crusted Chicken Breast","Grilled Chicken","Oven-Roasted Meatballs","Sautéed Shrimp","Marinated Steak","Pulled Pork","Seasoned Tofu","Garden Salad","Caesar Salad","Side of Creamy Cheddar Mac & Cheese","Lemon Parmesan Broccoli","Side of Chicken Noodle Soup","Baguette"]},{"name":"Angry Chickz","meals":["#1 — Two hot chicken sliders with slaw, pickles & fries","#2 — Two hot chicken tenders over toast with pickles & fries","#3 — One hot chicken slider + one tender over toast with slaw, pickles & fries","#4 — Two hot chicken tenders over buttery rice with slaw, pickles & Angry Chickz Sauce","Hangry Fix — Two tenders over rice with mac & cheese, slaw & Angry Chickz Sauce","Angry Mac — Two chopped tenders over fries with mac & cheese & Angry Chickz Sauce","Angry Fries — Two hot chicken tenders over fries with slaw, pickles & Angry Chickz Sauce"],"drinks":["Coke","Diet Coke","Fanta Orange","Sprite","Pibb Xtra","Raspberry Iced Tea"],"desserts":["Churro Bites","Cookie","No Dessert","Extra Drink Instead"],"extras":["Rice","Tender","Mac & Cheese","Slider","Coleslaw","Fries"]},{"name":"Meetch's on Algonquin","meals":["6 Traditional Wings","10 Traditional Wings","6 Boneless Wings","10 Boneless Wings","Smash Burger","Grilled Chicken Sandwich","Chicken Skewers","Chicago Char Dog","Pork Belly Bites","4pc Hot Honey Chicken Tenders","6pc Hot Honey Chicken Tenders","Buffalo Chicken Ranch Wrap","Chicken Caesar Wrap","Pork Chop Sandwich","Philly Cheesesteak","Gyro Sandwich","Caesar Salad","Caesar Salad with Grilled Chicken"],"drinks":["Coke","Sprite","Root Beer","Lemonade"],"desserts":["Meetch's Peaches"],"extras":["French Fries","Onion Tanglers","Jalapeño Poppers","Pepper Jack Bites","Carrot & Celery Sticks","Pickle Spear","Ranch","Blue Cheese","Tzatziki"],"wingSauces":["Buffalo","BBQ","Honey BBQ","Garlic Parm","XXX-Tra Hot","Korean BBQ","Jamaican Jerk","Mango Habanero","Hot Honey","Chimichurri","Cherry Bomb","Teriyaki","Peri Peri","Curry","Old Bay","Lemon Pepper"]},{"name":"Raising Cane's","meals":["The Box Combo","The Caniac Combo","The 3 Finger Combo","The Sandwich Combo","The Kids Combo"],"drinks":["Lemonade","Sweet Tea","Unsweet Tea","Half Tea / Half Lemonade","Fountain Drink"],"desserts":["No Dessert"],"extras":["Chicken Finger","Crinkle-Cut Fries","Cane's Sauce","Texas Toast","Coleslaw","Chicken Sandwich"]},{"name":"Red Lobster","meals":["Sailor's Seafood Boil","Mariner's Seafood Boil","Sailor's Seafood Boil Family Meal","Mariner's Seafood Boil Family Meal","Create Your Own Ultimate Feast","Ultimate Feast","Admiral's Feast","Sailor's Platter","Grilled Lobster, Shrimp & Salmon","Surf & Turf — Maine Lobster Tail & 7 oz. Sirloin","Surf & Turf — Maine Lobster Tail & 6 oz. Filet Mignon","Garlic Shrimp Scampi","Seaside Shrimp Trio","Parrot Isle Coconut Shrimp","Grilled Shrimp","Walt's Favorite Shrimp","Parmesan-Crusted Chicken","Crab Your Way","Atlantic Salmon","Salmon New Orleans","Fish and Chips","Live Maine Lobster","7 oz. Sirloin","6 oz. Filet Mignon","Wild-Caught Crunch-Fried Flounder","Crispy Chicken Tenders","Lobster Lover's Duo","Garlic Lover's 7 oz. Sirloin","Garlic Lover's 6 oz. Filet","Lobster & Shrimp Linguini","Shrimp Linguini Alfredo","Cajun Chicken Linguini Alfredo","Crab & Shrimp Linguini Alfredo","Classic Chicken Linguini Alfredo"],"drinks":["Unsweet Iced Tea","Classic Lemonade","Strawberry Lemonade","Watermelon Lemonade","Mango Lemonade","Boston Iced Tea — Raspberry","Boston Iced Tea — Cranberry","Boston Iced Tea — Mango","Raspberry Lemonade","Pepsi","Diet Pepsi","Pepsi Zero Sugar","Dr Pepper","Mug Root Beer","Starry Lemon-Lime","Mountain Dew","Strawberry Smoothie","Raspberry Smoothie","Chocolate Smoothie","Mango Smoothie"],"desserts":["Chocolate Wave","Classic Cheesecake","Key Lime Pie","Brownie Overboard"],"extras":["Half Dozen Cheddar Bay Biscuits","One Dozen Cheddar Bay Biscuits","Grilled Shrimp","Bacon-Wrapped Sea Scallops","Classic Maine Lobster Tail","Grilled Maine Lobster Tail","Rock Lobster Tail","Walt's Favorite Shrimp","Garlic Shrimp Scampi","Popcorn Shrimp","Garlic Linguini Alfredo","Snow Crab Legs (1/2 lb.)","Crispy Bay Scallops","Seafood-Stuffed Mushrooms","Crispy Dragon Shrimp","Hand-Breaded Calamari","Shrimp Cocktail","Parrot Isle Coconut Shrimp Appetizer","Lobster Dip","Mozzarella Cheesesticks","Lobster Flatbread","Crab Queso","Lobster Bisque — Cup","Lobster Bisque — Bowl","New England Clam Chowder — Cup","New England Clam Chowder — Bowl","Crab-Topped Mashed Potatoes","Roasted Asparagus","Hush Puppies","Bacon Mac & Cheese","Orzo Rice","Crispy Brussels Sprouts","Baked Potato","Creamy Lobster Baked Potato","Mashed Potatoes","Creamy Lobster Mashed Potatoes","Chesapeake Fries","Lobster Pasta au Gratin","Coleslaw","Caesar Side Salad","House Side Salad","Cajun Sauce","Roasted Garlic Sauce","OLD BAY Sauce","Lemon Pepper Sauce","RL Signature Sauce","Mike's Hot Honey"]}];
+
 const titleEl = document.getElementById("movieTitle");
 const yearEl = document.getElementById("movieYear");
 const button = document.getElementById("randomizeButton");
+const skullBurst = document.getElementById("skullBurst");
 let lastIndex = -1;
+let currentFood = null;
+let currentMeal = null;
 
 function setMovie(movie) {
   titleEl.classList.add("fade-out");
   yearEl.classList.add("fade-out");
-
   setTimeout(() => {
     titleEl.textContent = movie.title;
     yearEl.textContent = "(" + movie.year + ")";
     titleEl.classList.remove("fade-out");
     yearEl.classList.remove("fade-out");
-  }, 160);
+  }, 140);
+}
+
+function triggerSkull() {
+  skullBurst.classList.remove("active");
+  void skullBurst.offsetWidth;
+  skullBurst.classList.add("active");
 }
 
 function randomizeMovie() {
@@ -393,57 +300,83 @@ function randomizeMovie() {
   do {
     index = Math.floor(Math.random() * movies.length);
   } while (movies.length > 1 && index === lastIndex);
-
   lastIndex = index;
   setMovie(movies[index]);
+  triggerSkull();
 }
 
 button.addEventListener("click", randomizeMovie);
 
-const foodPlaces=[
-{name:"McDonald's",meals:["Big Mac Meal","Quarter Pounder with Cheese Meal","10 pc. Chicken McNuggets Meal","McCrispy Meal"],drinks:["Coca-Cola","Sprite","Dr Pepper","Sweet Tea"],desserts:["OREO McFlurry","Apple Pie","Hot Fudge Sundae","Chocolate Shake"],extras:["6 pc. Chicken McNuggets","Small Fries","Hash Browns","Extra Cheeseburger"]},
-{name:"Wendy's",meals:["Dave's Single Combo","Baconator Combo","Spicy Chicken Sandwich Combo","10 pc. Nuggets Combo"],drinks:["Coca-Cola","Sprite","Dr Pepper","Lemonade"],desserts:["Chocolate Frosty","Vanilla Frosty","Frosty Cream Cold Brew","Sugar Cookie"],extras:["Chili","6 pc. Nuggets","Baconator Fries","Junior Cheeseburger"]},
-{name:"Taco Bell",meals:["Crunchwrap Supreme Combo","3 Doritos Locos Tacos Combo","Chicken Quesadilla Combo","Cheesy Gordita Crunch Combo"],drinks:["Baja Blast","Pepsi","Starry","Brisk Tea"],desserts:["Cinnabon Delights","Cinnamon Twists","Caramel Apple Empanada","No Dessert"],extras:["Cheesy Fiesta Potatoes","Bean Burrito","Spicy Potato Soft Taco","Nachos & Cheese"]},
-{name:"Burger King",meals:["Whopper Meal","Bacon King Meal","Original Chicken Sandwich Meal","Chicken Fries Meal"],drinks:["Coca-Cola","Sprite","Dr Pepper","Frozen Coke"],desserts:["Hershey's Sundae Pie","Soft Serve Cup","Chocolate Shake","OREO Shake"],extras:["Chicken Fries","Onion Rings","8 pc. Nuggets","Double Cheeseburger"]},
-{name:"Culver's",meals:["ButterBurger Cheese Basket","Mushroom & Swiss ButterBurger Basket","Chicken Tenders Basket","Crispy Chicken Sandwich Basket"],drinks:["Root Beer","Coca-Cola","Dr Pepper","Sweet Tea"],desserts:["Vanilla Concrete Mixer","Chocolate Concrete Mixer","Turtle Sundae","Dish of Frozen Custard"],extras:["Wisconsin Cheese Curds","Crinkle Cut Fries","Onion Rings","Pretzel Bites"]},
-{name:"Popeyes",meals:["Chicken Sandwich Combo","Spicy Chicken Sandwich Combo","3 pc. Tenders Combo","3 pc. Signature Chicken Combo"],drinks:["Coca-Cola","Sprite","Dr Pepper","Sweet Tea"],desserts:["Cinnamon Apple Pie","Strawberry Biscuit","Chocolate Chip Biscuit","No Dessert"],extras:["Red Beans & Rice","Mac & Cheese","Mashed Potatoes with Cajun Gravy","Extra Biscuit"]},
-{name:"KFC",meals:["3 pc. Chicken Combo","Chicken Sandwich Combo","5 pc. Tenders Combo","Famous Bowl Combo"],drinks:["Pepsi","Starry","Mountain Dew","Sweet Tea"],desserts:["Chocolate Chip Cookie","Apple Turnover","Cake Slice","No Dessert"],extras:["Mac & Cheese","Mashed Potatoes & Gravy","Biscuit","Extra Tender"]},
-{name:"White Castle",meals:["Cheese Slider Combo","Double Cheese Slider Combo","Chicken Ring Combo","Crispy Chicken Slider Combo"],drinks:["Coca-Cola","Sprite","Fruit Punch","Chocolate Shake"],desserts:["Brownie on a Stick","Cheesecake on a Stick","Strawberry Swirl Cheesecake","No Dessert"],extras:["Chicken Rings","Onion Chips","Mozzarella Cheese Sticks","Extra Slider"]},
-{name:"Portillo's",meals:["Italian Beef Sandwich","Char-Broiled Cheeseburger","Maxwell Street Polish","Breaded Chicken Sandwich"],drinks:["Coca-Cola","Sprite","Root Beer","Chocolate Cake Shake"],desserts:["Chocolate Cake","Strawberry Shortcake","Chocolate Éclair Cake","Chocolate Cake Shake"],extras:["Cheese Fries","Onion Rings","Cup of Chili","Hot Dog"]},
-{name:"Sonic",meals:["SuperSONIC Double Cheeseburger Combo","Footlong Quarter Pound Coney Combo","Crispy Chicken Sandwich Combo","Chicken Tenders Combo"],drinks:["Cherry Limeade","Ocean Water","Dr Pepper","Strawberry Lemonade"],desserts:["OREO Blast","Chocolate Shake","Hot Fudge Sundae","Reese's Blast"],extras:["Mozzarella Sticks","Tots","Chili Cheese Tots","Corn Dog"]},
-{name:"Noodles & Company",meals:["Wisconsin Mac & Cheese","Pesto Cavatappi","Japanese Pan Noodles","Penne Rosa","Buttered Noodles"],drinks:["Coca-Cola","Sprite","Lemonade","Iced Tea"],desserts:["Rice Crispy Treat","Chocolate Chunk Cookie","Snickerdoodle Cookie","No Dessert"],extras:["Potstickers","Cheesy Garlic Bread","Side Caesar Salad","Extra Protein"]},
-{name:"Angry Chickz",meals:["2 Slider Combo","2 Tender Combo","Slider & Tender Combo","Loaded Mac & Cheese with Chicken"],drinks:["Coke","Sprite","Lemonade","Sweet Tea"],desserts:["Churro Bites","Cookie","No Dessert","Extra Drink Instead"],extras:["Angry Fries","Mac & Cheese","Extra Tender","Extra Slider"]},
-{name:"Meetch's on Algonquin",meals:["Cheeseburger Meal","Double Cheeseburger Meal","Chicken Sandwich Meal","Gyro Meal","Italian Beef Meal"],drinks:["Coke","Sprite","Root Beer","Lemonade"],desserts:["Chocolate Shake","Vanilla Shake","Cookie","No Dessert"],extras:["Cheese Fries","Onion Rings","Mozzarella Sticks","Extra Sandwich"]},
-{name:"Raising Cane's",meals:["Box Combo","Caniac Combo","3 Finger Combo","Sandwich Combo"],drinks:["Coca-Cola","Sprite","Sweet Tea","Lemonade"],desserts:["No Dessert","Extra Texas Toast","Extra Cane's Sauce","Sweet Tea"],extras:["Extra Chicken Finger","Extra Texas Toast","Extra Cane's Sauce","Extra Crinkle-Cut Fries"]},
-{name:"Red Lobster",meals:["Ultimate Feast","Admiral's Feast","Shrimp Your Way","Fish & Chips","Lobster Lover's Duo"],drinks:["Coca-Cola","Sprite","Iced Tea","Lemonade"],desserts:["Chocolate Wave","Key Lime Pie","Brownie Overboard","No Dessert"],extras:["Cheddar Bay Biscuits","Lobster Mashed Potatoes","Mozzarella Cheesesticks","Cup of Clam Chowder"]}
-];
+const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const specialRow = document.getElementById("foodSpecialRow");
+const specialLabel = document.getElementById("foodSpecialLabel");
+const specialValue = document.getElementById("foodSpecial");
 
-let currentFood=null;
-const pickRandom=a=>a[Math.floor(Math.random()*a.length)];
-
-function setFoodOrder(place){
-  currentFood=place;
-  document.getElementById("foodPlace").textContent=place.name;
-  document.getElementById("foodMeal").textContent=pickRandom(place.meals);
-  document.getElementById("foodDrink").textContent=pickRandom(place.drinks);
-  document.getElementById("foodDessert").textContent=pickRandom(place.desserts);
-  document.getElementById("foodExtra").textContent=pickRandom(place.extras);
+function isWingMeal(place, meal) {
+  return place && place.name === "Meetch's on Algonquin" && /Wings/i.test(meal || "");
 }
-function ensureFood(){
-  if(!currentFood) setFoodOrder(pickRandom(foodPlaces));
+
+function updateSpecial(place, meal, forceNew = true) {
+  if (isWingMeal(place, meal) && place.wingSauces && place.wingSauces.length) {
+    specialRow.hidden = false;
+    specialLabel.textContent = "Wing Sauce";
+    if (forceNew || specialValue.textContent === "—") {
+      specialValue.textContent = pickRandom(place.wingSauces);
+    }
+  } else {
+    specialRow.hidden = true;
+    specialLabel.textContent = "Special Pick";
+    specialValue.textContent = "—";
+  }
+}
+
+function setFoodOrder(place) {
+  currentFood = place;
+  currentMeal = pickRandom(place.meals);
+  document.getElementById("foodPlace").textContent = place.name;
+  document.getElementById("foodMeal").textContent = currentMeal;
+  document.getElementById("foodDrink").textContent = pickRandom(place.drinks);
+  document.getElementById("foodDessert").textContent = pickRandom(place.desserts);
+  document.getElementById("foodExtra").textContent = pickRandom(place.extras);
+  updateSpecial(place, currentMeal, true);
+}
+
+function ensureFood() {
+  if (!currentFood) setFoodOrder(pickRandom(restaurants));
   return currentFood;
 }
-document.getElementById("rollFood").addEventListener("click",()=>setFoodOrder(pickRandom(foodPlaces)));
-document.getElementById("rerollPlace").addEventListener("click",()=>{
-  const prev=currentFood?currentFood.name:"";
+
+document.getElementById("rollFood").addEventListener("click", () => setFoodOrder(pickRandom(restaurants)));
+document.getElementById("rerollPlace").addEventListener("click", () => {
+  const prev = currentFood ? currentFood.name : "";
   let next;
-  do{next=pickRandom(foodPlaces)}while(foodPlaces.length>1&&next.name===prev);
+  do { next = pickRandom(restaurants); } while (restaurants.length > 1 && next.name === prev);
   setFoodOrder(next);
 });
-document.getElementById("rerollMeal").addEventListener("click",()=>{const p=ensureFood();document.getElementById("foodMeal").textContent=pickRandom(p.meals)});
-document.getElementById("rerollDrink").addEventListener("click",()=>{const p=ensureFood();document.getElementById("foodDrink").textContent=pickRandom(p.drinks)});
-document.getElementById("rerollDessert").addEventListener("click",()=>{const p=ensureFood();document.getElementById("foodDessert").textContent=pickRandom(p.desserts)});
-document.getElementById("rerollExtra").addEventListener("click",()=>{const p=ensureFood();document.getElementById("foodExtra").textContent=pickRandom(p.extras)});
+document.getElementById("rerollMeal").addEventListener("click", () => {
+  const p = ensureFood();
+  currentMeal = pickRandom(p.meals);
+  document.getElementById("foodMeal").textContent = currentMeal;
+  updateSpecial(p, currentMeal, true);
+});
+document.getElementById("rerollDrink").addEventListener("click", () => {
+  const p = ensureFood();
+  document.getElementById("foodDrink").textContent = pickRandom(p.drinks);
+});
+document.getElementById("rerollDessert").addEventListener("click", () => {
+  const p = ensureFood();
+  document.getElementById("foodDessert").textContent = pickRandom(p.desserts);
+});
+document.getElementById("rerollExtra").addEventListener("click", () => {
+  const p = ensureFood();
+  document.getElementById("foodExtra").textContent = pickRandom(p.extras);
+});
+document.getElementById("rerollSpecial").addEventListener("click", () => {
+  const p = ensureFood();
+  if (isWingMeal(p, currentMeal) && p.wingSauces && p.wingSauces.length) {
+    specialValue.textContent = pickRandom(p.wingSauces);
+  }
+});
 
 </script>
 </body>
