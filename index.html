@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stephen King Movie Randomizer</title>
+<style>
+  :root {
+    --bg1: #070707;
+    --bg2: #120a0b;
+    --wine: #421214;
+    --blood: #b32025;
+    --blood-bright: #d9363d;
+    --bone: #ece6dd;
+    --muted: #a89f98;
+    --panel: rgba(15, 14, 15, 0.82);
+    --line: rgba(255, 255, 255, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow-x: hidden;
+    color: var(--bone);
+    background:
+      radial-gradient(circle at 15% 15%, rgba(120, 18, 20, 0.18), transparent 20%),
+      radial-gradient(circle at 82% 22%, rgba(150, 24, 30, 0.14), transparent 18%),
+      linear-gradient(180deg, #140d0e 0%, #0a0909 45%, #060606 100%);
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+    opacity: 0.3;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+  }
+
+  .sky {
+    position: fixed;
+    inset: 0;
+    overflow-x: hidden;
+    pointer-events: none;
+  }
+
+  .moon {
+    position: absolute;
+    right: 10%;
+    top: 8%;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, #f5f0e5 0%, #ddd5c8 35%, #b7b0a7 58%, rgba(183,176,167,0.3) 62%, rgba(183,176,167,0) 75%);
+    opacity: 0.16;
+    filter: blur(0.2px);
+    box-shadow: 0 0 60px rgba(255,255,255,0.06), 0 0 140px rgba(255,255,255,0.03);
+  }
+
+  .branches {
+    position: absolute;
+    inset: 0;
+    opacity: 0.09;
+    background:
+      linear-gradient(120deg, transparent 0 77%, rgba(0,0,0,0.8) 77.2% 77.7%, transparent 78%),
+      linear-gradient(128deg, transparent 0 80%, rgba(0,0,0,0.85) 80.2% 80.55%, transparent 80.9%),
+      linear-gradient(118deg, transparent 0 85%, rgba(0,0,0,0.75) 85.2% 85.45%, transparent 85.7%),
+      linear-gradient(245deg, transparent 0 15%, rgba(0,0,0,0.8) 15.1% 15.5%, transparent 15.9%),
+      linear-gradient(235deg, transparent 0 9%, rgba(0,0,0,0.8) 9.1% 9.35%, transparent 9.7%);
+    transform: scale(1.12);
+  }
+
+  .fog, .fog2, .fog3 {
+    position: absolute;
+    left: -10%;
+    width: 120%;
+    border-radius: 50%;
+    filter: blur(18px);
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 45%, rgba(255,255,255,0) 70%);
+    animation: drift 26s linear infinite;
+  }
+  .fog { height: 180px; bottom: 10%; }
+  .fog2 { height: 130px; bottom: 23%; animation-duration: 34s; animation-direction: reverse; opacity: .7; }
+  .fog3 { height: 100px; bottom: 38%; animation-duration: 42s; opacity: .35; }
+
+  @keyframes drift {
+    from { transform: translateX(-3%) translateY(0); }
+    50% { transform: translateX(3%) translateY(-8px); }
+    to { transform: translateX(-3%) translateY(0); }
+  }
+
+  .wrap {
+    position: relative;
+    width: min(860px, calc(100vw - 32px));
+    z-index: 2;
+  }
+
+  .card {
+    position: relative;
+    padding: 40px 32px 34px;
+    border-radius: 24px;
+    background:
+      linear-gradient(180deg, rgba(22, 19, 20, 0.92), rgba(10, 10, 10, 0.92));
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+      0 24px 80px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(179,32,37,0.07) inset,
+      0 0 30px rgba(179,32,37,0.08);
+    backdrop-filter: blur(6px);
+    overflow-x: hidden;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at top right, rgba(185, 32, 37, 0.12), transparent 25%),
+      radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.04), transparent 22%);
+    pointer-events: none;
+  }
+
+  .topline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2.2px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .rule {
+    width: 48px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+  }
+
+  h1 {
+    margin: 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    line-height: 0.94;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: clamp(44px, 7vw, 86px);
+    color: var(--bone);
+    text-shadow: 0 2px 0 rgba(0,0,0,0.35);
+  }
+
+  h1 .accent {
+    display: block;
+    color: var(--blood-bright);
+    text-shadow: 0 4px 0 rgba(70, 10, 12, 0.72), 0 0 26px rgba(217,54,61,0.12);
+  }
+
+  .sub {
+    margin-top: 16px;
+    text-align: center;
+    color: #b8ada5;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+  }
+
+  .display {
+    margin: 36px auto 26px;
+    padding: 28px 20px 24px;
+    max-width: 700px;
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: inset 0 0 28px rgba(255,255,255,0.02);
+    text-align: center;
+  }
+
+  .eyebrow {
+    color: var(--blood-bright);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+
+  #movieTitle {
+    font-size: clamp(38px, 6.5vw, 74px);
+    line-height: 1.04;
+    margin: 0 0 10px;
+    text-wrap: balance;
+    min-height: 1.1em;
+    transition: opacity .22s ease, transform .22s ease;
+  }
+
+  #movieYear {
+    font-size: clamp(22px, 3vw, 30px);
+    color: var(--muted);
+    transition: opacity .22s ease, transform .22s ease;
+  }
+
+  .fade-out {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+  }
+
+  button {
+    position: relative;
+    appearance: none;
+    border: 1px solid rgba(245, 104, 104, 0.7);
+    border-radius: 999px;
+    padding: 16px 28px;
+    min-width: 250px;
+    cursor: pointer;
+    color: white;
+    font: 700 16px Georgia, serif;
+    letter-spacing: 1.2px;
+    background:
+      linear-gradient(180deg, #b82026 0%, #8b1318 60%, #6f0c11 100%);
+    box-shadow:
+      0 12px 24px rgba(0,0,0,.28),
+      0 0 24px rgba(185,32,37,.16),
+      inset 0 1px 0 rgba(255,255,255,.18);
+    transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    box-shadow:
+      0 14px 28px rgba(0,0,0,.3),
+      0 0 26px rgba(185,32,37,.22),
+      inset 0 1px 0 rgba(255,255,255,.2);
+  }
+
+  button:active {
+    transform: translateY(1px) scale(.99);
+  }
+
+  .meta {
+    margin-top: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .chip {
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: #c0b7af;
+    font-size: 13px;
+    letter-spacing: .4px;
+  }
+
+  .footer {
+    margin-top: 28px;
+    text-align: center;
+    color: #8d837d;
+    font-size: 13px;
+    letter-spacing: 1.2px;
+  }
+
+  .footer span {
+    color: #bc383d;
+  }
+
+  @media (max-width: 640px) {
+    .card { padding: 30px 18px 24px; border-radius: 20px; }
+    .display { margin-top: 28px; padding: 22px 14px 20px; }
+    .moon { width: 100px; height: 100px; right: 4%; top: 5%; }
+    .chip { font-size: 12px; }
+    button { min-width: 210px; width: 100%; }
+    .actions { padding: 0 6px; }
+  }
+
+.food-section{margin-top:22px;padding:28px 24px 24px;border-radius:20px;background:linear-gradient(180deg,rgba(20,18,18,.9),rgba(9,9,9,.92));border:1px solid rgba(255,255,255,.07);box-shadow:0 18px 55px rgba(0,0,0,.35),0 0 25px rgba(179,32,37,.05)}
+.food-title{margin:0 0 6px;text-align:center;color:var(--bone);font-size:28px}
+.food-sub{text-align:center;color:var(--muted);font-size:13px;letter-spacing:.8px;margin-bottom:20px}
+.food-grid{display:grid;gap:10px}
+.food-row{display:grid;grid-template-columns:145px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.025)}
+.food-label{color:#c7bbb2;font-size:12px;text-transform:uppercase;letter-spacing:1.5px}
+.food-value{min-width:0;color:var(--bone);font-size:18px;line-height:1.25}
+.mini-roll{min-width:0;width:auto;padding:9px 13px;border-radius:999px;font-size:12px;letter-spacing:.6px;box-shadow:none}
+.food-main-actions{display:flex;justify-content:center;margin-top:16px}
+.food-main-actions button{min-width:230px}
+@media (max-width:640px){.food-section{padding:22px 14px 18px}.food-row{grid-template-columns:1fr auto;gap:8px}.food-label{grid-column:1/-1;margin-bottom:-2px}.food-value{font-size:16px}.mini-roll{width:auto;min-width:92px}}
+
+</style>
+</head>
+<body>
+  <div class="sky" aria-hidden="true">
+    <div class="moon"></div>
+    <div class="branches"></div>
+    <div class="fog"></div>
+    <div class="fog2"></div>
+    <div class="fog3"></div>
+  </div>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="topline">
+        <div class="rule"></div>
+        <div>Preliminary Randomizer</div>
+        <div class="rule"></div>
+      </div>
+
+      <h1>
+        <span class="accent">Stephen King</span>
+        Movie Randomizer
+      </h1>
+
+      <div class="sub">A simple draw from the full Stephen King movie pool</div>
+
+      <div class="display">
+        <div class="eyebrow">Tonight's Movie</div>
+        <div id="movieTitle">Press the button</div>
+        <div id="movieYear">—</div>
+      </div>
+
+      <div class="actions">
+        <button id="randomizeButton" type="button">🎲 RANDOMIZE MOVIE</button>
+      </div>
+
+      <div class="meta">
+        <div class="chip">55 movies in the pool</div>
+        <div class="chip">No immediate repeats</div>
+        <div class="chip">Version 1</div>
+      </div>
+
+      <div class="footer">Long days and pleasant nights<span>.</span></div>
+    </section>
+
+<section class="food-section">
+  <div class="topline"><div class="rule"></div><div>Movie Night Fuel</div><div class="rule"></div></div>
+  <h2 class="food-title">Fast Food Picker</h2>
+  <div class="food-sub">Pick the place, then let fate build the order.</div>
+  <div class="food-grid">
+    <div class="food-row"><div class="food-label">Fast Food Place</div><div class="food-value" id="foodPlace">Press Roll Food</div><button class="mini-roll" id="rerollPlace" type="button">↻ REROLL</button></div>
+    <div class="food-row"><div class="food-label">Meal</div><div class="food-value" id="foodMeal">—</div><button class="mini-roll" id="rerollMeal" type="button">↻ REROLL</button></div>
+    <div class="food-row"><div class="food-label">Drink</div><div class="food-value" id="foodDrink">—</div><button class="mini-roll" id="rerollDrink" type="button">↻ REROLL</button></div>
+    <div class="food-row"><div class="food-label">Dessert</div><div class="food-value" id="foodDessert">—</div><button class="mini-roll" id="rerollDessert" type="button">↻ REROLL</button></div>
+    <div class="food-row"><div class="food-label">Extra Random Item</div><div class="food-value" id="foodExtra">—</div><button class="mini-roll" id="rerollExtra" type="button">↻ REROLL</button></div>
+  </div>
+  <div class="food-main-actions"><button id="rollFood" type="button">🍔 ROLL FOOD</button></div>
+</section>
+
+  </main>
+
+<script>
+const movies = [{"title": "Carrie", "year": 1976}, {"title": "The Shining", "year": 1980}, {"title": "Creepshow", "year": 1982}, {"title": "Cujo", "year": 1983}, {"title": "The Dead Zone", "year": 1983}, {"title": "Christine", "year": 1983}, {"title": "Children of the Corn", "year": 1984}, {"title": "Firestarter", "year": 1984}, {"title": "Cat's Eye", "year": 1985}, {"title": "Silver Bullet", "year": 1985}, {"title": "Maximum Overdrive", "year": 1986}, {"title": "Stand by Me", "year": 1986}, {"title": "Creepshow 2", "year": 1987}, {"title": "The Running Man", "year": 1987}, {"title": "Pet Sematary", "year": 1989}, {"title": "Graveyard Shift", "year": 1990}, {"title": "Misery", "year": 1990}, {"title": "Tales from the Darkside: The Movie", "year": 1990}, {"title": "Sleepwalkers", "year": 1992}, {"title": "The Dark Half", "year": 1993}, {"title": "Needful Things", "year": 1993}, {"title": "The Shawshank Redemption", "year": 1994}, {"title": "The Mangler", "year": 1995}, {"title": "Dolores Claiborne", "year": 1995}, {"title": "Thinner", "year": 1996}, {"title": "The Night Flier", "year": 1997}, {"title": "Apt Pupil", "year": 1998}, {"title": "The Green Mile", "year": 1999}, {"title": "Hearts in Atlantis", "year": 2001}, {"title": "Dreamcatcher", "year": 2003}, {"title": "Secret Window", "year": 2004}, {"title": "Riding the Bullet", "year": 2004}, {"title": "1408", "year": 2007}, {"title": "The Mist", "year": 2007}, {"title": "Dolan's Cadillac", "year": 2009}, {"title": "Carrie", "year": 2013}, {"title": "A Good Marriage", "year": 2014}, {"title": "Mercy", "year": 2014}, {"title": "Cell", "year": 2016}, {"title": "The Dark Tower", "year": 2017}, {"title": "It", "year": 2017}, {"title": "Gerald's Game", "year": 2017}, {"title": "1922", "year": 2017}, {"title": "Pet Sematary", "year": 2019}, {"title": "It Chapter Two", "year": 2019}, {"title": "In the Tall Grass", "year": 2019}, {"title": "Doctor Sleep", "year": 2019}, {"title": "Firestarter", "year": 2022}, {"title": "Mr. Harrigan's Phone", "year": 2022}, {"title": "The Boogeyman", "year": 2023}, {"title": "'Salem's Lot", "year": 2024}, {"title": "The Life of Chuck", "year": 2024}, {"title": "The Monkey", "year": 2025}, {"title": "The Long Walk", "year": 2025}, {"title": "The Running Man", "year": 2025}];
+const titleEl = document.getElementById("movieTitle");
+const yearEl = document.getElementById("movieYear");
+const button = document.getElementById("randomizeButton");
+let lastIndex = -1;
+
+function setMovie(movie) {
+  titleEl.classList.add("fade-out");
+  yearEl.classList.add("fade-out");
+
+  setTimeout(() => {
+    titleEl.textContent = movie.title;
+    yearEl.textContent = "(" + movie.year + ")";
+    titleEl.classList.remove("fade-out");
+    yearEl.classList.remove("fade-out");
+  }, 160);
+}
+
+function randomizeMovie() {
+  let index;
+  do {
+    index = Math.floor(Math.random() * movies.length);
+  } while (movies.length > 1 && index === lastIndex);
+
+  lastIndex = index;
+  setMovie(movies[index]);
+}
+
+button.addEventListener("click", randomizeMovie);
+
+const foodPlaces=[
+{name:"McDonald's",meals:["Big Mac Meal","Quarter Pounder with Cheese Meal","10 pc. Chicken McNuggets Meal","McCrispy Meal"],drinks:["Coca-Cola","Sprite","Dr Pepper","Sweet Tea"],desserts:["OREO McFlurry","Apple Pie","Hot Fudge Sundae","Chocolate Shake"],extras:["6 pc. Chicken McNuggets","Small Fries","Hash Browns","Extra Cheeseburger"]},
+{name:"Wendy's",meals:["Dave's Single Combo","Baconator Combo","Spicy Chicken Sandwich Combo","10 pc. Nuggets Combo"],drinks:["Coca-Cola","Sprite","Dr Pepper","Lemonade"],desserts:["Chocolate Frosty","Vanilla Frosty","Frosty Cream Cold Brew","Sugar Cookie"],extras:["Chili","6 pc. Nuggets","Baconator Fries","Junior Cheeseburger"]},
+{name:"Taco Bell",meals:["Crunchwrap Supreme Combo","3 Doritos Locos Tacos Combo","Chicken Quesadilla Combo","Cheesy Gordita Crunch Combo"],drinks:["Baja Blast","Pepsi","Starry","Brisk Tea"],desserts:["Cinnabon Delights","Cinnamon Twists","Caramel Apple Empanada","No Dessert"],extras:["Cheesy Fiesta Potatoes","Bean Burrito","Spicy Potato Soft Taco","Nachos & Cheese"]},
+{name:"Burger King",meals:["Whopper Meal","Bacon King Meal","Original Chicken Sandwich Meal","Chicken Fries Meal"],drinks:["Coca-Cola","Sprite","Dr Pepper","Frozen Coke"],desserts:["Hershey's Sundae Pie","Soft Serve Cup","Chocolate Shake","OREO Shake"],extras:["Chicken Fries","Onion Rings","8 pc. Nuggets","Double Cheeseburger"]},
+{name:"Culver's",meals:["ButterBurger Cheese Basket","Mushroom & Swiss ButterBurger Basket","Chicken Tenders Basket","Crispy Chicken Sandwich Basket"],drinks:["Root Beer","Coca-Cola","Dr Pepper","Sweet Tea"],desserts:["Vanilla Concrete Mixer","Chocolate Concrete Mixer","Turtle Sundae","Dish of Frozen Custard"],extras:["Wisconsin Cheese Curds","Crinkle Cut Fries","Onion Rings","Pretzel Bites"]},
+{name:"Popeyes",meals:["Chicken Sandwich Combo","Spicy Chicken Sandwich Combo","3 pc. Tenders Combo","3 pc. Signature Chicken Combo"],drinks:["Coca-Cola","Sprite","Dr Pepper","Sweet Tea"],desserts:["Cinnamon Apple Pie","Strawberry Biscuit","Chocolate Chip Biscuit","No Dessert"],extras:["Red Beans & Rice","Mac & Cheese","Mashed Potatoes with Cajun Gravy","Extra Biscuit"]},
+{name:"KFC",meals:["3 pc. Chicken Combo","Chicken Sandwich Combo","5 pc. Tenders Combo","Famous Bowl Combo"],drinks:["Pepsi","Starry","Mountain Dew","Sweet Tea"],desserts:["Chocolate Chip Cookie","Apple Turnover","Cake Slice","No Dessert"],extras:["Mac & Cheese","Mashed Potatoes & Gravy","Biscuit","Extra Tender"]},
+{name:"White Castle",meals:["Cheese Slider Combo","Double Cheese Slider Combo","Chicken Ring Combo","Crispy Chicken Slider Combo"],drinks:["Coca-Cola","Sprite","Fruit Punch","Chocolate Shake"],desserts:["Brownie on a Stick","Cheesecake on a Stick","Strawberry Swirl Cheesecake","No Dessert"],extras:["Chicken Rings","Onion Chips","Mozzarella Cheese Sticks","Extra Slider"]},
+{name:"Portillo's",meals:["Italian Beef Sandwich","Char-Broiled Cheeseburger","Maxwell Street Polish","Breaded Chicken Sandwich"],drinks:["Coca-Cola","Sprite","Root Beer","Chocolate Cake Shake"],desserts:["Chocolate Cake","Strawberry Shortcake","Chocolate Éclair Cake","Chocolate Cake Shake"],extras:["Cheese Fries","Onion Rings","Cup of Chili","Hot Dog"]},
+{name:"Sonic",meals:["SuperSONIC Double Cheeseburger Combo","Footlong Quarter Pound Coney Combo","Crispy Chicken Sandwich Combo","Chicken Tenders Combo"],drinks:["Cherry Limeade","Ocean Water","Dr Pepper","Strawberry Lemonade"],desserts:["OREO Blast","Chocolate Shake","Hot Fudge Sundae","Reese's Blast"],extras:["Mozzarella Sticks","Tots","Chili Cheese Tots","Corn Dog"]},
+{name:"Noodles & Company",meals:["Wisconsin Mac & Cheese","Pesto Cavatappi","Japanese Pan Noodles","Penne Rosa","Buttered Noodles"],drinks:["Coca-Cola","Sprite","Lemonade","Iced Tea"],desserts:["Rice Crispy Treat","Chocolate Chunk Cookie","Snickerdoodle Cookie","No Dessert"],extras:["Potstickers","Cheesy Garlic Bread","Side Caesar Salad","Extra Protein"]},
+{name:"Angry Chickz",meals:["2 Slider Combo","2 Tender Combo","Slider & Tender Combo","Loaded Mac & Cheese with Chicken"],drinks:["Coke","Sprite","Lemonade","Sweet Tea"],desserts:["Churro Bites","Cookie","No Dessert","Extra Drink Instead"],extras:["Angry Fries","Mac & Cheese","Extra Tender","Extra Slider"]},
+{name:"Meetch's on Algonquin",meals:["Cheeseburger Meal","Double Cheeseburger Meal","Chicken Sandwich Meal","Gyro Meal","Italian Beef Meal"],drinks:["Coke","Sprite","Root Beer","Lemonade"],desserts:["Chocolate Shake","Vanilla Shake","Cookie","No Dessert"],extras:["Cheese Fries","Onion Rings","Mozzarella Sticks","Extra Sandwich"]},
+{name:"Raising Cane's",meals:["Box Combo","Caniac Combo","3 Finger Combo","Sandwich Combo"],drinks:["Coca-Cola","Sprite","Sweet Tea","Lemonade"],desserts:["No Dessert","Extra Texas Toast","Extra Cane's Sauce","Sweet Tea"],extras:["Extra Chicken Finger","Extra Texas Toast","Extra Cane's Sauce","Extra Crinkle-Cut Fries"]},
+{name:"Red Lobster",meals:["Ultimate Feast","Admiral's Feast","Shrimp Your Way","Fish & Chips","Lobster Lover's Duo"],drinks:["Coca-Cola","Sprite","Iced Tea","Lemonade"],desserts:["Chocolate Wave","Key Lime Pie","Brownie Overboard","No Dessert"],extras:["Cheddar Bay Biscuits","Lobster Mashed Potatoes","Mozzarella Cheesesticks","Cup of Clam Chowder"]}
+];
+
+let currentFood=null;
+const pickRandom=a=>a[Math.floor(Math.random()*a.length)];
+
+function setFoodOrder(place){
+  currentFood=place;
+  document.getElementById("foodPlace").textContent=place.name;
+  document.getElementById("foodMeal").textContent=pickRandom(place.meals);
+  document.getElementById("foodDrink").textContent=pickRandom(place.drinks);
+  document.getElementById("foodDessert").textContent=pickRandom(place.desserts);
+  document.getElementById("foodExtra").textContent=pickRandom(place.extras);
+}
+function ensureFood(){
+  if(!currentFood) setFoodOrder(pickRandom(foodPlaces));
+  return currentFood;
+}
+document.getElementById("rollFood").addEventListener("click",()=>setFoodOrder(pickRandom(foodPlaces)));
+document.getElementById("rerollPlace").addEventListener("click",()=>{
+  const prev=currentFood?currentFood.name:"";
+  let next;
+  do{next=pickRandom(foodPlaces)}while(foodPlaces.length>1&&next.name===prev);
+  setFoodOrder(next);
+});
+document.getElementById("rerollMeal").addEventListener("click",()=>{const p=ensureFood();document.getElementById("foodMeal").textContent=pickRandom(p.meals)});
+document.getElementById("rerollDrink").addEventListener("click",()=>{const p=ensureFood();document.getElementById("foodDrink").textContent=pickRandom(p.drinks)});
+document.getElementById("rerollDessert").addEventListener("click",()=>{const p=ensureFood();document.getElementById("foodDessert").textContent=pickRandom(p.desserts)});
+document.getElementById("rerollExtra").addEventListener("click",()=>{const p=ensureFood();document.getElementById("foodExtra").textContent=pickRandom(p.extras)});
+
+</script>
+</body>
+</html>
