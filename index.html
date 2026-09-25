@@ -136,6 +136,13 @@ button {
 }
 button:hover { transform:translateY(-1px); filter:brightness(1.06); }
 button:active { transform:translateY(1px) scale(.99); }
+button:disabled { opacity:.48; cursor:not-allowed; transform:none; filter:none; }
+.secondary-button {
+  min-width:0; padding:11px 18px; font-size:12px; letter-spacing:.7px;
+  background:rgba(255,255,255,.025); color:#b8ada5;
+  border-color:rgba(255,255,255,.14); box-shadow:none;
+}
+.secondary-button:hover { background:rgba(255,255,255,.055); }
 .meta {
   margin-top:24px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
 }
@@ -237,11 +244,13 @@ button:active { transform:translateY(1px) scale(.99); }
 
     <div class="actions">
       <button id="randomizeButton" type="button">🎲 RANDOMIZE MOVIE</button>
+      <button id="resetMoviesButton" class="secondary-button" type="button">RESET MOVIE HISTORY</button>
     </div>
 
     <div class="meta">
-      <div class="chip">37 movies in the pool</div>
-      <div class="chip">No immediate repeats</div>
+      <div class="chip" id="remainingMoviesChip">37 movies remaining</div>
+      <div class="chip">No repeats until you reset</div>
+      <div class="chip">History saves on this device</div>
       <div class="chip">Laughing skull effect enabled</div>
     </div>
 
@@ -273,10 +282,39 @@ const restaurants = [{"name":"McDonald's","meals":["Deluxe McCrispy Meal","Spicy
 const titleEl = document.getElementById("movieTitle");
 const yearEl = document.getElementById("movieYear");
 const button = document.getElementById("randomizeButton");
+const resetMoviesButton = document.getElementById("resetMoviesButton");
+const remainingMoviesChip = document.getElementById("remainingMoviesChip");
 const skullBurst = document.getElementById("skullBurst");
-let lastIndex = -1;
+const MOVIE_HISTORY_KEY = "jayStephenKingMovieHistoryV1";
 let currentFood = null;
 let currentMeal = null;
+
+const movieKey = (movie) => `${movie.title}::${movie.year}`;
+
+function getUsedMovieKeys() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(MOVIE_HISTORY_KEY) || "[]");
+    return new Set(Array.isArray(saved) ? saved : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveUsedMovieKeys(used) {
+  localStorage.setItem(MOVIE_HISTORY_KEY, JSON.stringify([...used]));
+}
+
+function getRemainingMovies() {
+  const used = getUsedMovieKeys();
+  return movies.filter(movie => !used.has(movieKey(movie)));
+}
+
+function updateMoviePoolStatus() {
+  const remaining = getRemainingMovies().length;
+  remainingMoviesChip.textContent = `${remaining} movie${remaining === 1 ? "" : "s"} remaining`;
+  button.disabled = remaining === 0;
+  button.textContent = remaining === 0 ? "ALL MOVIES ROLLED" : "🎲 RANDOMIZE MOVIE";
+}
 
 function setMovie(movie) {
   titleEl.classList.add("fade-out");
@@ -296,16 +334,33 @@ function triggerSkull() {
 }
 
 function randomizeMovie() {
-  let index;
-  do {
-    index = Math.floor(Math.random() * movies.length);
-  } while (movies.length > 1 && index === lastIndex);
-  lastIndex = index;
-  setMovie(movies[index]);
+  const remaining = getRemainingMovies();
+  if (!remaining.length) {
+    updateMoviePoolStatus();
+    return;
+  }
+
+  const movie = remaining[Math.floor(Math.random() * remaining.length)];
+  const used = getUsedMovieKeys();
+  used.add(movieKey(movie));
+  saveUsedMovieKeys(used);
+
+  setMovie(movie);
   triggerSkull();
+  updateMoviePoolStatus();
+}
+
+function resetMovieHistory() {
+  if (!confirm("Reset the movie history and put all 37 movies back in the pool?")) return;
+  localStorage.removeItem(MOVIE_HISTORY_KEY);
+  titleEl.textContent = "Press the button";
+  yearEl.textContent = "—";
+  updateMoviePoolStatus();
 }
 
 button.addEventListener("click", randomizeMovie);
+resetMoviesButton.addEventListener("click", resetMovieHistory);
+updateMoviePoolStatus();
 
 const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const specialRow = document.getElementById("foodSpecialRow");
